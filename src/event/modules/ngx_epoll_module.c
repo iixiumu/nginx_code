@@ -13,6 +13,33 @@
 #if (NGX_TEST_BUILD_EPOLL)
 
 /* epoll declarations */
+/*
+       EPOLLIN
+              The associated file is available for read(2) operations.
+
+       EPOLLOUT
+              The associated file is available for write(2) operations.
+
+       EPOLLRDHUP (since Linux 2.6.17)
+              Stream socket peer closed connection, or shut down writing half of connection.  (This flag is especially useful for writing simple code to detect peer shutdown when using Edge Triggered monitoring.)
+
+       EPOLLPRI
+              There is urgent data available for read(2) operations.
+
+       EPOLLERR
+              Error condition happened on the associated file descriptor.  epoll_wait(2) will always wait for this event; it is not necessary to set it in events.
+
+       EPOLLHUP
+              Hang up happened on the associated file descriptor.  epoll_wait(2) will always wait for this event; it is not necessary to set it in events.
+
+       EPOLLET
+              Sets  the  Edge Triggered behavior for the associated file descriptor.  The default behavior for epoll is Level Triggered.  See epoll(7) for more detailed information about Edge and Level Triggered event distribution
+              architectures.
+
+       EPOLLONESHOT (since Linux 2.6.2)
+              Sets the one-shot behavior for the associated file descriptor.  This means that after an event is pulled out with epoll_wait(2) the associated file descriptor is internally  disabled  and  no  other  events  will  be
+              reported by the epoll interface.  The user must call epoll_ctl() with EPOLL_CTL_MOD to re-arm the file descriptor with a new event mask.
+ */
 
 #define EPOLLIN        0x001
 #define EPOLLPRI       0x002
@@ -834,6 +861,7 @@ ngx_epoll_process_events(ngx_cycle_t *cycle, ngx_msec_t timer, ngx_uint_t flags)
     }
 
     for (i = 0; i < events; i++) {
+        // ptr指针指向ngx_connection_t
         c = event_list[i].data.ptr;
 
         instance = (uintptr_t) c & 1;
@@ -859,6 +887,7 @@ ngx_epoll_process_events(ngx_cycle_t *cycle, ngx_msec_t timer, ngx_uint_t flags)
                        "epoll: fd:%d ev:%04XD d:%p",
                        c->fd, revents, event_list[i].data.ptr);
 
+        // error
         if (revents & (EPOLLERR|EPOLLHUP)) {
             ngx_log_debug2(NGX_LOG_DEBUG_EVENT, cycle->log, 0,
                            "epoll_wait() error on fd:%d ev:%04XD",
@@ -882,6 +911,7 @@ ngx_epoll_process_events(ngx_cycle_t *cycle, ngx_msec_t timer, ngx_uint_t flags)
 
         if ((revents & EPOLLIN) && rev->active) {
 
+            // 对端关闭，有的系统不支持
 #if (NGX_HAVE_EPOLLRDHUP)
             if (revents & EPOLLRDHUP) {
                 rev->pending_eof = 1;
@@ -892,6 +922,8 @@ ngx_epoll_process_events(ngx_cycle_t *cycle, ngx_msec_t timer, ngx_uint_t flags)
 
             rev->ready = 1;
 
+            // accept or read
+            // queue or direct handler
             if (flags & NGX_POST_EVENTS) {
                 queue = rev->accept ? &ngx_posted_accept_events
                                     : &ngx_posted_events;

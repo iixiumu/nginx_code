@@ -21,7 +21,7 @@ static ngx_uint_t ngx_module_ctx_index(ngx_cycle_t *cycle, ngx_uint_t type,
 ngx_uint_t         ngx_max_module;
 static ngx_uint_t  ngx_modules_n;
 
-
+// 初始化ngx_modules的index和name成员，以及ngx_modules_n、ngx_max_module
 ngx_int_t
 ngx_preinit_modules(void)
 {
@@ -39,6 +39,7 @@ ngx_preinit_modules(void)
 }
 
 
+// 从ngx_modules复制数据到cycle->modules
 ngx_int_t
 ngx_cycle_modules(ngx_cycle_t *cycle)
 {

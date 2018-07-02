@@ -191,6 +191,7 @@ static char        *ngx_signal;
 static char **ngx_os_environ;
 
 
+// 入口，main函数
 int ngx_cdecl
 main(int argc, char *const *argv)
 {
@@ -221,6 +222,7 @@ main(int argc, char *const *argv)
 
     /* TODO */ ngx_max_sockets = -1;
 
+    // 初始化time，更新time
     ngx_time_init();
 
 #if (NGX_PCRE)
@@ -280,10 +282,12 @@ main(int argc, char *const *argv)
 
     ngx_slab_sizes_init();
 
+    // env NGINX_VAR获取socket，加入cycle->listening
     if (ngx_add_inherited_sockets(&init_cycle) != NGX_OK) {
         return 1;
     }
 
+    // 初始化ngx_modules的index和name成员，以及ngx_modules_n、ngx_max_module
     if (ngx_preinit_modules() != NGX_OK) {
         return 1;
     }
@@ -324,6 +328,7 @@ main(int argc, char *const *argv)
         return 0;
     }
 
+    // 处理信号，kill
     if (ngx_signal) {
         return ngx_signal_process(cycle, ngx_signal);
     }
@@ -344,6 +349,7 @@ main(int argc, char *const *argv)
         return 1;
     }
 
+    // daemon模式
     if (!ngx_inherited && ccf->daemon) {
         if (ngx_daemon(cycle->log) != NGX_OK) {
             return 1;
@@ -448,6 +454,7 @@ ngx_show_version_info(void)
 }
 
 
+// env NGINX_VAR获取socket，加入cycle->listening
 static ngx_int_t
 ngx_add_inherited_sockets(ngx_cycle_t *cycle)
 {

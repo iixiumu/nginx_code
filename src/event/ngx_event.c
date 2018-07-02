@@ -201,6 +201,7 @@ ngx_process_events_and_timers(ngx_cycle_t *cycle)
         flags = 0;
 
     } else {
+        // 最新的定时器时间，epoll_wait time
         timer = ngx_event_find_timer();
         flags = NGX_UPDATE_TIME;
 
@@ -208,6 +209,7 @@ ngx_process_events_and_timers(ngx_cycle_t *cycle)
 
         /* handle signals from master in case of network inactivity */
 
+        // time最大500
         if (timer == NGX_TIMER_INFINITE || timer > 500) {
             timer = 500;
         }
@@ -224,6 +226,7 @@ ngx_process_events_and_timers(ngx_cycle_t *cycle)
                 return;
             }
 
+            // 如果获得了锁，所有事件放入队列就返回，然后accept，释放锁，读写事件
             if (ngx_accept_mutex_held) {
                 flags |= NGX_POST_EVENTS;
 
@@ -246,8 +249,10 @@ ngx_process_events_and_timers(ngx_cycle_t *cycle)
     ngx_log_debug1(NGX_LOG_DEBUG_EVENT, cycle->log, 0,
                    "timer delta: %M", delta);
 
+    // accept事件
     ngx_event_process_posted(cycle, &ngx_posted_accept_events);
 
+    // accept处理完成释放锁
     if (ngx_accept_mutex_held) {
         ngx_shmtx_unlock(&ngx_accept_mutex);
     }
@@ -256,6 +261,7 @@ ngx_process_events_and_timers(ngx_cycle_t *cycle)
         ngx_event_expire_timers();
     }
 
+    // 处理普通事件
     ngx_event_process_posted(cycle, &ngx_posted_events);
 }
 

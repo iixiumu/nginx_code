@@ -132,6 +132,7 @@ ngx_init_cycle(ngx_cycle_t *old_cycle)
         return NULL;
     }
 
+    // 红黑树，定时器管理
     ngx_rbtree_init(&cycle->config_dump_rbtree, &cycle->config_dump_sentinel,
                     ngx_str_rbtree_insert_value);
 
@@ -153,6 +154,7 @@ ngx_init_cycle(ngx_cycle_t *old_cycle)
     }
 
 
+    // shared_memory
     if (old_cycle->shared_memory.part.nelts) {
         n = old_cycle->shared_memory.part.nelts;
         for (part = old_cycle->shared_memory.part.next; part; part = part->next)
@@ -171,6 +173,7 @@ ngx_init_cycle(ngx_cycle_t *old_cycle)
         return NULL;
     }
 
+    // 来自env NGINX_VAR
     n = old_cycle->listening.nelts ? old_cycle->listening.nelts : 10;
 
     if (ngx_array_init(&cycle->listening, pool, n, sizeof(ngx_listening_t))
@@ -213,12 +216,14 @@ ngx_init_cycle(ngx_cycle_t *old_cycle)
     ngx_strlow(cycle->hostname.data, (u_char *) hostname, cycle->hostname.len);
 
 
+    // 从ngx_modules复制数据到cycle->modules
     if (ngx_cycle_modules(cycle) != NGX_OK) {
         ngx_destroy_pool(pool);
         return NULL;
     }
 
 
+    // NGX_CORE_MODULE create_conf
     for (i = 0; cycle->modules[i]; i++) {
         if (cycle->modules[i]->type != NGX_CORE_MODULE) {
             continue;
@@ -255,6 +260,7 @@ ngx_init_cycle(ngx_cycle_t *old_cycle)
     }
 
 
+    // conf
     conf.ctx = cycle->conf_ctx;
     conf.cycle = cycle;
     conf.pool = pool;
@@ -266,12 +272,14 @@ ngx_init_cycle(ngx_cycle_t *old_cycle)
     log->log_level = NGX_LOG_DEBUG_ALL;
 #endif
 
+    // nginx -g
     if (ngx_conf_param(&conf) != NGX_CONF_OK) {
         environ = senv;
         ngx_destroy_cycle_pools(&conf);
         return NULL;
     }
 
+    // configuration file -> ngx_command_t set
     if (ngx_conf_parse(&conf, &cycle->conf_file) != NGX_CONF_OK) {
         environ = senv;
         ngx_destroy_cycle_pools(&conf);
@@ -283,6 +291,7 @@ ngx_init_cycle(ngx_cycle_t *old_cycle)
                        cycle->conf_file.data);
     }
 
+    // NGX_CORE_MODULE init_conf
     for (i = 0; cycle->modules[i]; i++) {
         if (cycle->modules[i]->type != NGX_CORE_MODULE) {
             continue;
@@ -798,6 +807,7 @@ old_shm_zone_done:
     }
     *old = old_cycle;
 
+    // 一个定时器，30000
     if (!ngx_cleaner_event.timer_set) {
         ngx_add_timer(&ngx_cleaner_event, 30000);
         ngx_cleaner_event.timer_set = 1;

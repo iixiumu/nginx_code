@@ -1,0 +1,101 @@
+struct ngx_module_t {
+    ngx_uint_t            ctx_index;
+    ngx_uint_t            index;
+
+    char                 *name;
+
+    ngx_uint_t            spare0;
+    ngx_uint_t            spare1;
+
+    ngx_uint_t            version;
+    const char           *signature;
+
+    void                 *ctx;
+    ngx_command_t        *commands;
+    ngx_uint_t            type;
+
+    ngx_int_t           (*init_master)(ngx_log_t *log);
+
+    ngx_int_t           (*init_module)(ngx_cycle_t *cycle);
+
+    ngx_int_t           (*init_process)(ngx_cycle_t *cycle);
+    ngx_int_t           (*init_thread)(ngx_cycle_t *cycle);
+    void                (*exit_thread)(ngx_cycle_t *cycle);
+    void                (*exit_process)(ngx_cycle_t *cycle);
+
+    void                (*exit_master)(ngx_cycle_t *cycle);
+
+    uintptr_t             spare_hook0;
+    uintptr_t             spare_hook1;
+    uintptr_t             spare_hook2;
+    uintptr_t             spare_hook3;
+    uintptr_t             spare_hook4;
+    uintptr_t             spare_hook5;
+    uintptr_t             spare_hook6;
+    uintptr_t             spare_hook7;
+};
+
+struct ngx_command_t {
+    ngx_str_t             name;
+    ngx_uint_t            type;
+    char               *(*set)(ngx_conf_t *cf, ngx_command_t *cmd, void *conf);
+    ngx_uint_t            conf;
+    ngx_uint_t            offset;
+    void                 *post;
+};
+
+typedef struct {
+    ngx_str_t             name;
+    void               *(*create_conf)(ngx_cycle_t *cycle);
+    char               *(*init_conf)(ngx_cycle_t *cycle, void *conf);
+} ngx_core_module_t;
+static ngx_core_module_t  ngx_events_module_ctx = {
+    ngx_string("events"),
+    NULL,
+    ngx_event_init_conf
+};
+static ngx_core_module_t  ngx_http_module_ctx = {
+    ngx_string("http"),
+    NULL,
+    NULL
+};
+typedef struct {
+    ngx_str_t              *name;
+
+    void                 *(*create_conf)(ngx_cycle_t *cycle);
+    char                 *(*init_conf)(ngx_cycle_t *cycle, void *conf);
+
+    ngx_event_actions_t     actions;
+} ngx_event_module_t;
+typedef struct {
+    ngx_int_t   (*preconfiguration)(ngx_conf_t *cf);
+    ngx_int_t   (*postconfiguration)(ngx_conf_t *cf);
+
+    void       *(*create_main_conf)(ngx_conf_t *cf);
+    char       *(*init_main_conf)(ngx_conf_t *cf, void *conf);
+
+    void       *(*create_srv_conf)(ngx_conf_t *cf);
+    char       *(*merge_srv_conf)(ngx_conf_t *cf, void *prev, void *conf);
+
+    void       *(*create_loc_conf)(ngx_conf_t *cf);
+    char       *(*merge_loc_conf)(ngx_conf_t *cf, void *prev, void *conf);
+} ngx_http_module_t;
+
+struct ngx_conf_s {
+    char                 *name;
+    ngx_array_t          *args;
+
+    ngx_cycle_t          *cycle;
+    ngx_pool_t           *pool;
+    ngx_pool_t           *temp_pool;
+    ngx_conf_file_t      *conf_file;
+    ngx_log_t            *log;
+
+    void                 *ctx;
+    ngx_uint_t            module_type;
+    ngx_uint_t            cmd_type;
+
+    ngx_conf_handler_pt   handler;
+    void                 *handler_conf;
+};
+
