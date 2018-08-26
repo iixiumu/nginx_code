@@ -61,6 +61,7 @@ ngx_init_cycle(ngx_cycle_t *old_cycle)
     tp = ngx_timeofday();
     tp->sec = 0;
 
+    // 更新时间
     ngx_time_update();
 
 

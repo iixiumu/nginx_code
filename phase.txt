@@ -1,0 +1,20 @@
+typedef enum {
+    NGX_HTTP_POST_READ_PHASE = 0,       // ngx_http_core_generic_phase
+
+    NGX_HTTP_SERVER_REWRITE_PHASE,      // ngx_http_core_rewrite_phase
+
+    NGX_HTTP_FIND_CONFIG_PHASE,         // -ngx_http_core_find_config_phase
+    NGX_HTTP_REWRITE_PHASE,             // ngx_http_core_rewrite_phase
+    NGX_HTTP_POST_REWRITE_PHASE,        // -ngx_http_core_post_rewrite_phase
+
+    NGX_HTTP_PREACCESS_PHASE,           // ngx_http_core_generic_phase
+
+    NGX_HTTP_ACCESS_PHASE,              // ngx_http_core_access_phase
+    NGX_HTTP_POST_ACCESS_PHASE,         // -ngx_http_core_post_access_phase
+
+    NGX_HTTP_PRECONTENT_PHASE,          // ngx_http_core_generic_phase
+
+    NGX_HTTP_CONTENT_PHASE,             // ngx_http_core_content_phase
+
+    NGX_HTTP_LOG_PHASE                  // ngx_http_core_generic_phase
+} ngx_http_phases;

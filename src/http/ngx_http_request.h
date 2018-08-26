@@ -179,8 +179,10 @@ typedef struct {
 
 
 typedef struct {
+    // 解析过的头部，链表
     ngx_list_t                        headers;
 
+    // RFC2616头部
     ngx_table_elt_t                  *host;
     ngx_table_elt_t                  *connection;
     ngx_table_elt_t                  *if_modified_since;
@@ -252,12 +254,16 @@ typedef struct {
 
 
 typedef struct {
+    // 头部
     ngx_list_t                        headers;
     ngx_list_t                        trailers;
 
+    // 状态
     ngx_uint_t                        status;
+    // 状态行
     ngx_str_t                         status_line;
 
+    // RFC1616定义
     ngx_table_elt_t                  *server;
     ngx_table_elt_t                  *date;
     ngx_table_elt_t                  *content_length;
@@ -368,6 +374,7 @@ typedef ngx_int_t (*ngx_http_handler_pt)(ngx_http_request_t *r);
 typedef void (*ngx_http_event_handler_pt)(ngx_http_request_t *r);
 
 
+// 请求的所有信息
 struct ngx_http_request_s {
     uint32_t                          signature;         /* "HTTP" */
 
@@ -390,11 +397,15 @@ struct ngx_http_request_s {
                                          /* of ngx_http_upstream_state_t */
 
     ngx_pool_t                       *pool;
+    // 指向收到的未经解析的HTTP头部，头部缓冲区
     ngx_buf_t                        *header_in;
 
+    // 已经解析过的HTTP头部
     ngx_http_headers_in_t             headers_in;
+    // 响应体的头部
     ngx_http_headers_out_t            headers_out;
 
+    // 请求体
     ngx_http_request_body_t          *request_body;
 
     time_t                            lingering_time;

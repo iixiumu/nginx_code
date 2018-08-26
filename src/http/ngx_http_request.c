@@ -356,6 +356,7 @@ ngx_http_init_connection(ngx_connection_t *c)
             return;
         }
 
+        // ngx_http_wait_request_handler
         rev->handler(rev);
         return;
     }

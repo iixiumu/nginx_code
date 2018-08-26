@@ -18,9 +18,13 @@ typedef void *            ngx_buf_tag_t;
 typedef struct ngx_buf_s  ngx_buf_t;
 
 struct ngx_buf_s {
+    // 内存中开始位置
     u_char          *pos;
+    // 内存中结束位置
     u_char          *last;
+    // 文件中开始位置
     off_t            file_pos;
+    // 文件中结束位置
     off_t            file_last;
 
     u_char          *start;         /* start of buffer */

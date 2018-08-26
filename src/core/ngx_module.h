@@ -220,7 +220,9 @@
 
 
 struct ngx_module_s {
+    // 当前模块在这一类模块中的序号
     ngx_uint_t            ctx_index;
+    // 当前模块在ngx_modules数据中的序号
     ngx_uint_t            index;
 
     char                 *name;
@@ -231,19 +233,29 @@ struct ngx_module_s {
     ngx_uint_t            version;
     const char           *signature;
 
+    // 上下文
     void                 *ctx;
+    // command set
     ngx_command_t        *commands;
+    // core, http, event, conf, mail 5类
     ngx_uint_t            type;
 
+    // master启动时，未使用
     ngx_int_t           (*init_master)(ngx_log_t *log);
 
+    // 初始化所有模块，启动worker前调用
     ngx_int_t           (*init_module)(ngx_cycle_t *cycle);
 
+    // worker初始化过程中调用
     ngx_int_t           (*init_process)(ngx_cycle_t *cycle);
+    // 未使用
     ngx_int_t           (*init_thread)(ngx_cycle_t *cycle);
+    // 未使用
     void                (*exit_thread)(ngx_cycle_t *cycle);
+    // worker退出前调用
     void                (*exit_process)(ngx_cycle_t *cycle);
 
+    // master退出前调用
     void                (*exit_master)(ngx_cycle_t *cycle);
 
     uintptr_t             spare_hook0;

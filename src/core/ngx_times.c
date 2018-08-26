@@ -26,6 +26,7 @@ static ngx_msec_t ngx_monotonic_time(time_t sec, ngx_uint_t msec);
 static ngx_uint_t        slot;
 static ngx_atomic_t      ngx_time_lock;
 
+// 存储全局时间，原子更新
 volatile ngx_msec_t      ngx_current_msec;
 volatile ngx_time_t     *ngx_cached_time;
 volatile ngx_str_t       ngx_cached_err_log_time;
@@ -77,7 +78,7 @@ ngx_time_init(void)
 }
 
 
-// 更新时间
+// 更新时间，更新时间变量
 void
 ngx_time_update(void)
 {

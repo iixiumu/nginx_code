@@ -26,6 +26,7 @@ static void ngx_process_get_status(void);
 static void ngx_unlock_mutexes(ngx_pid_t pid);
 
 
+// 命令行参数
 int              ngx_argc;
 char           **ngx_argv;
 char           **ngx_os_argv;

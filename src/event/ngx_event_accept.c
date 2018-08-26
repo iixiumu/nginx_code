@@ -4,6 +4,7 @@
  * Copyright (C) Nginx, Inc.
  */
 
+// IOCP !!!
 
 #include <ngx_config.h>
 #include <ngx_core.h>
@@ -305,6 +306,7 @@ ngx_event_accept(ngx_event_t *ev)
         log->data = NULL;
         log->handler = NULL;
 
+        // ngx_http_init_connection, handler = ngx_http_wait_request_handler
         ls->handler(c);
 
         if (ngx_event_flags & NGX_USE_KQUEUE_EVENT) {

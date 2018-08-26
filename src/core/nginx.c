@@ -196,8 +196,10 @@ int ngx_cdecl
 main(int argc, char *const *argv)
 {
     ngx_buf_t        *b;
+    // 日志,debug&error
     ngx_log_t        *log;
     ngx_uint_t        i;
+    // 主循环
     ngx_cycle_t      *cycle, init_cycle;
     ngx_conf_dump_t  *cd;
     ngx_core_conf_t  *ccf;
